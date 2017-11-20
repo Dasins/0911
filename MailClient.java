@@ -12,6 +12,8 @@ public class MailClient
     private MailServer server;
     // The user running this client.
     private String user;
+    // The last valid mail item.
+    private MailItem lastMailItem;
 
     /**
      * Create a mail client run by user and attached to the given server.
@@ -20,14 +22,19 @@ public class MailClient
     {
         this.server = server;
         this.user = user;
+        lastMailItem = null;
     }
 
     /**
-     * Return the next mail item (if any) for this user.
+     * @return The next mail item (if any) for this user.
      */
     public MailItem getNextMailItem()
     {
-        return server.getNextMailItem(user);
+        MailItem item = server.getNextMailItem(user);
+        if (item != null){
+            lastMailItem = item;
+        }
+        return item;
     }
 
     /**
@@ -42,6 +49,7 @@ public class MailClient
         }
         else {
             item.print();
+            lastMailItem = item;
         }
     }
 
@@ -64,7 +72,17 @@ public class MailClient
      */
     public void howManyMailItems()
     {
-       System.out.println("Tiene " + server.howManyMailItems(user) +
-                            " mensajes por leer");  
+       System.out.println("You have " + server.howManyMailItems(user) +
+                           " messages to read.");  
+    }
+    
+    public void printLastMailItem()
+    {
+        if (lastMailItem == null){
+            System.out.println("You haven't got any message yet.");
+        }
+        else{
+            lastMailItem.print();
+        }
     }
 }
