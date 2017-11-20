@@ -57,4 +57,14 @@ public class MailClient
         MailItem item = new MailItem(user, to, subject, message);
         server.post(item);
     }
+    
+    /**
+     * Print on the text terminal 
+     * the number of mail items for the user on the mail server.
+     */
+    public void howManyMailItems()
+    {
+       System.out.println("Tiene " + server.howManyMailItems(user) +
+                            " mensajes por leer");  
+    }
 }
