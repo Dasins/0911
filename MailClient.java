@@ -2,8 +2,9 @@
  * A class to model a simple email client. The client is run by a
  * particular user, and sends and retrieves mail via a particular server.
  * 
- * @author David J. Barnes and Michael Kölling
- * @version 2011.07.31
+ * @author David J. Barnes, Michael Kölling, Fran Alvarez, Adrian Bermejo
+ * @author Julio Elena, David and Daniel Carmenes
+ * @version 2017.11.17
  */
 public class MailClient
 {
@@ -48,11 +49,12 @@ public class MailClient
      * Send the given message to the given recipient via
      * the attached mail server.
      * @param to The intended recipient.
+     * @param subject The subject of the message.
      * @param message The text of the message to be sent.
      */
-    public void sendMailItem(String to, String message)
+    public void sendMailItem(String to, String subject, String message)
     {
-        MailItem item = new MailItem(user, to, message);
+        MailItem item = new MailItem(user, to, subject, message);
         server.post(item);
     }
 }
