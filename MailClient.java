@@ -54,6 +54,7 @@ public class MailClient
             System.out.println("No new mail.");
         }
         else {
+            lastMailItem = item;
             item.print();
         }
     }
@@ -101,11 +102,8 @@ public class MailClient
      */
      public void getNextMailAndAutoReply()
     { 
-       // Change line under this comments 
-       // if you want to auto-reply spam mails.
-       // MailItem item = server.getNextMailItem(user);
        MailItem item = server.getNextMailItem(user);
-       if(item == null){
+       if(item == null || checkSpam(item)){
            System.out.println("Nothing to reply.");
        }
        else{

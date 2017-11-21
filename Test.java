@@ -32,12 +32,14 @@ public class Test
      * printed for the user is correct.
      * 
      * @note User must do visual verification.
+     * @note Watch out! Only if this method is the FIRST method 
+     * @note that you invoke print no mail advertisment on terminal.
      */
     public void testFuncionalidad01()
     {
         String to = "julio@groupd.dam";
         String subject = "A simply test message";
-        String message = "Blablabla bla blabla";
+        String message = "TestFuncionalidad01";
         // First test. 0 mail on server.
         System.out.println("Checking first functionality...");
         System.out.println("===================");
@@ -85,9 +87,10 @@ public class Test
      */
     public void testFuncionalidad02()
     {
+        // Car
         String to = "julio@groupd.dam";
         String subject = "A simply test message";
-        String message = "Blablabla bla blabla";
+        String message = "TestFuncionalidad02";
         String otherMessage = "The life of the wife is ended by the knife.";
         // First test. No mails.
         System.out.println("===================");
@@ -136,7 +139,7 @@ public class Test
         String message = "Blablabla bla blabla";
         //First test, no mail, try to auto-reply.
         System.out.println("===================");
-        System.out.println("No mail" + 
+        System.out.println("No mail. " + 
                         "Julio tries to auto-reply his next mail.");
         julioUserAccount.getNextMailAndAutoReply();
         System.out.println("===================");
@@ -151,6 +154,15 @@ public class Test
         System.out.println("Fran downloads and prints the Julio's reply.");
         System.out.println("");
         franUserAccount.printNextMailItem();
+        System.out.println("===================");
+        //Third test, send 1 mail with spam. Try to auto-reply.
+        System.out.println("");
+        System.out.println("===================");
+        System.out.println("Fran sends 1 message with spam to Julio.");
+        message = "Una buena viaga, es un buen regalo";
+        franUserAccount.sendMailItem(to, subject, message);
+        System.out.println("Julio tries to auto-reply his next mail.");
+        julioUserAccount.getNextMailAndAutoReply();
         System.out.println("===================");
     }
     
