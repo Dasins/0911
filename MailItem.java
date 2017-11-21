@@ -2,7 +2,7 @@
  * A class to model a simple mail item. The item has sender and recipient
  * addresses and a message string.
  * 
- * @author David J. Barnes, Michael Kölling, Fran Alvarez, Adrian Bermejo
+* @author David J. Barnes, Michael Kölling, Fran Alvarez, Adrian Bermejo
  * @author Julio Elena, David and Daniel Carmenes
  * @version 2017.11.17
  */

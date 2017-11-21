@@ -43,13 +43,12 @@ public class MailClient
      */
     public void printNextMailItem()
     {
-        MailItem item = server.getNextMailItem(user);
+        MailItem item = getNextMailItem();
         if(item == null) {
             System.out.println("No new mail.");
         }
         else {
             item.print();
-            lastMailItem = item;
         }
     }
 
@@ -76,6 +75,10 @@ public class MailClient
                            " messages to read.");  
     }
     
+    /**
+     * Print to the text terminal the last mail item received if any, 
+     * or print an advertisement if not.
+     */
     public void printLastMailItem()
     {
         if (lastMailItem == null){
@@ -85,4 +88,23 @@ public class MailClient
             lastMailItem.print();
         }
     }
+    
+    /**
+     * Download the next mail item (if any) for this user
+     * and, if it is valid, send an auto-reply mail to the sender. 
+     */
+     public void getNextMailAndAutoReply()
+    {
+       MailItem item = getNextMailItem();
+       if(item == null){
+           System.out.println("Nothing to reply.");
+       }
+       else{
+           String subject = "Re: " + item.getSubject();
+           String message = "Thanks for your mail.\n" 
+                                + item.getMessage();
+           sendMailItem(item.getFrom(), subject, message);
+       }
+    }
+    
 }
