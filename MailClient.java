@@ -14,6 +14,12 @@ public class MailClient
     private String user;
     // The last valid mail item.
     private MailItem lastMailItem;
+    // Number of sent mails.
+    private int sentMails;
+    // Number of received mails.
+    private int receivedMails;
+    // The mail with longest message;
+    private MailItem longerMail;
 
     /**
      * Create a mail client run by user and attached to the given server.
@@ -23,6 +29,9 @@ public class MailClient
         this.server = server;
         this.user = user;
         lastMailItem = null;
+        sentMails = 0;
+        receivedMails = 0;
+        longerMail = new MailItem(user,"","","");
     }
 
     /**
@@ -31,11 +40,12 @@ public class MailClient
     public MailItem getNextMailItem()
     {
         MailItem item = server.getNextMailItem(user);
-        if (checkSpam(item) && item != null){
+        if (checkSpam(item)){
             item = null;
         }
         if (item != null){
             lastMailItem = item;
+            checkLengthMMessage(item);
         }
         return item;
     }
@@ -55,6 +65,8 @@ public class MailClient
         }
         else {
             lastMailItem = item;
+            checkLengthMMessage(item);
+            receivedMails += 1;
             item.print();
         }
     }
@@ -70,6 +82,9 @@ public class MailClient
     {
         MailItem item = new MailItem(user, to, subject, message);
         server.post(item);
+        if (!checkSpam(item)){
+            sentMails += 1;
+        }
     }
     
     /**
@@ -110,26 +125,58 @@ public class MailClient
            String subject = "Re: " + item.getSubject();
            String message = "Thanks for your mail.\n" 
                                 + item.getMessage();
+           checkLengthMMessage(item);
            sendMailItem(item.getFrom(), subject, message);
+           sentMails += 1;
+           receivedMails += 1;
        }
     }
     
     /**
      * Returns a value of true if an invalid string appears in the message.
      * If not returns false
-     * 
      * @param item The mail item that is checked for spam.
      * @return True if message is spam. False if not.
      */
-    private boolean checkSpam(MailItem item)
+    public boolean checkSpam(MailItem item)
     {
-        boolean spam = false;
+        boolean mailIsSpam = false;
         if (item.getMessage().toLowerCase().indexOf("viagra") > 0){
-            spam = true;
+            mailIsSpam = true;
         }
         if (item.getMessage().toLowerCase().indexOf("regalo") > 0){
-            spam = true;
+            mailIsSpam = true;
         }
-        return spam;
+        return mailIsSpam;
+    }
+   
+    
+    /**
+     * Check the length of a received mail message.
+     * If the length of the received mail is greeter than the last longer message, remplace it.
+     * @note If a received mail message has the same length of th longer message, this method don't store it.
+     */
+    private void checkLengthMMessage(MailItem item)
+    {
+        if(item.getMessage().length() > longerMail.getMessage().length()){
+            longerMail = item;
+        }
+    }
+    
+    /**
+     * Print on text terminal the number of sent/received messages 
+     * and the longest message you received sender.
+     */
+    public void printMailStatistics()
+    {
+        if(sentMails > 0 )
+        {
+           System.out.println("Received:" + receivedMails + " " + "Sent: " + sentMails 
+                                + " Longer mail from: " + longerMail.getFrom());
+        }
+        else
+        {
+           System.out.println("Received:" + receivedMails + " " + "Sent: " + sentMails);
+        }
     }
 }
