@@ -3,7 +3,7 @@
  * particular user, and sends and retrieves mail via a particular server.
  * 
  * @author David J. Barnes, Michael Kölling, Fran Alvarez, Adrian Bermejo
- * @author Julio Elena, David and Daniel Carmenes
+ * @author Julio Elena, David Rodriguez and Daniel Carmenes
  * @version 2017.11.17
  */
 public class MailClient
@@ -31,6 +31,9 @@ public class MailClient
     public MailItem getNextMailItem()
     {
         MailItem item = server.getNextMailItem(user);
+        if (checkSpam(item) && item != null){
+            item = null;
+        }
         if (item != null){
             lastMailItem = item;
         }
@@ -43,8 +46,11 @@ public class MailClient
      */
     public void printNextMailItem()
     {
-        MailItem item = getNextMailItem();
-        if(item == null) {
+        MailItem item = server.getNextMailItem(user);
+        if (checkSpam(item)){
+            System.out.println("Your next email has been marked as spam.");
+        }
+        else if(item == null) {
             System.out.println("No new mail.");
         }
         else {
@@ -91,11 +97,14 @@ public class MailClient
     
     /**
      * Download the next mail item (if any) for this user
-     * and, if it is valid, send an auto-reply mail to the sender. 
+     * When it is valid send an auto-reply mail to the sender. 
      */
      public void getNextMailAndAutoReply()
-    {
-       MailItem item = getNextMailItem();
+    { 
+       // Change line under this comments 
+       // if you want to auto-reply spam mails.
+       // MailItem item = server.getNextMailItem(user);
+       MailItem item = server.getNextMailItem(user);
        if(item == null){
            System.out.println("Nothing to reply.");
        }
@@ -107,4 +116,22 @@ public class MailClient
        }
     }
     
+    /**
+     * Returns a value of true if an invalid string appears in the message.
+     * If not returns false
+     * 
+     * @param item The mail item that is checked for spam.
+     * @return True if message is spam. False if not.
+     */
+    private boolean checkSpam(MailItem item)
+    {
+        boolean spam = false;
+        if (item.getMessage().toLowerCase().indexOf("viagra") > 0){
+            spam = true;
+        }
+        if (item.getMessage().toLowerCase().indexOf("regalo") > 0){
+            spam = true;
+        }
+        return spam;
+    }
 }
