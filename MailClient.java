@@ -60,12 +60,37 @@ public class MailClient
     public void printNextMailItem()
     {
         MailItem item = server.getNextMailItem(user);
+        if (checkSpam(item)){
+            System.out.println("Your next mail has been marked as spam.");
+            item = null;
+        }
         if (item == null){
             System.out.println("No new mail.");
         }
-        else if(checkSpam(item)){
-            
-            System.out.println("Your next mail has been marked as spam.");
+        else if(item.getMessage().substring(0,4).equals("?=? ")){
+            String message = item.getMessage();
+            message = message.replace("?=? ","");
+            message = message.replace("$\\","a");
+            message = message.replace("^", "A");
+            message = message.replace("*", "e");
+            message = message.replace("Ç", "E");
+            message = message.replace("º", "i");
+            message = message.replace("€", "I");
+            message = message.replace("·", "o");
+            message = message.replace("!", "O");
+            message = message.replace("ª", "u");
+            message = message.replace("+", "U");
+            String from = item.getFrom();
+            String to = item.getTo();
+            String subject = item.getSubject();
+            item = new MailItem (from,to,subject,message);
+            if (checkSpam(item)){
+                System.out.println("Your next mail has been marked as spam.");
+                item = null;
+            }
+            else {
+                item.print();
+            }
         }
         else {
             lastMailItem = item;
@@ -157,7 +182,6 @@ public class MailClient
         }
         return mailIsSpam;
     }
-   
     
     /**
      * Check the length of a received mail message.
@@ -180,7 +204,8 @@ public class MailClient
         if(receivedMails > 0 )
         {
            System.out.println("Sent: [" + sentMails +  "], Received: [" + receivedMails 
-                                + "], Longer mail from: [" + longerMail.getFrom() + "].");
+                                + "], Longer mail from: [" + longerMail.getFrom() 
+                                + "]. with " + longerMail.getMessage().length() + " characters");
         }
         else
         {
@@ -206,7 +231,7 @@ public class MailClient
         message = message.replace("e", "*");
         message = message.replace("E", "Ç");
         message = message.replace("i", "º");
-        message = message.replace("I", "=");
+        message = message.replace("I", "€");
         message = message.replace("o", "·");
         message = message.replace("O", "!");
         message = message.replace("u", "ª");

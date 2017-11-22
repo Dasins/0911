@@ -272,9 +272,6 @@ public class Test
         expectedItem = new MailItem (from, to, subject, message);
         julioMailClient.autoReplyNextMailItem();
         System.out.println("--------------------");
-        System.out.println("Their mail received");
-        franMailClient.printNextMailItem();
-        System.out.println("--------------------");
         System.out.println("");
     }
     
