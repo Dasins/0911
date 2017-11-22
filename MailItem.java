@@ -75,4 +75,5 @@ public class MailItem
         System.out.println("Subject: " + subject);
         System.out.println("Message: " + message);
     }
+    
 }

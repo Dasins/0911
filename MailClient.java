@@ -31,7 +31,7 @@ public class MailClient
         lastMailItem = null;
         sentMails = 0;
         receivedMails = 0;
-        longerMail = new MailItem(user,"","","");
+        longerMail = new MailItem("","","","");
     }
 
     /**
@@ -40,12 +40,15 @@ public class MailClient
     public MailItem getNextMailItem()
     {
         MailItem item = server.getNextMailItem(user);
-        if (checkSpam(item)){
-            item = null;
-        }
         if (item != null){
-            lastMailItem = item;
-            checkLengthMMessage(item);
+            if (checkSpam(item)){
+                item = null;
+            }
+            else{    
+                lastMailItem = item;
+                checkLengthMMessage(item);
+                receivedMails += 1;
+            }
         }
         return item;
     }
@@ -57,11 +60,12 @@ public class MailClient
     public void printNextMailItem()
     {
         MailItem item = server.getNextMailItem(user);
-        if (checkSpam(item)){
-            System.out.println("Your next email has been marked as spam.");
-        }
-        else if(item == null) {
+        if (item == null){
             System.out.println("No new mail.");
+        }
+        else if(checkSpam(item)){
+            
+            System.out.println("Your next mail has been marked as spam.");
         }
         else {
             lastMailItem = item;
@@ -105,7 +109,7 @@ public class MailClient
     {
         if (lastMailItem == null){
             System.out.println("You haven't got any message yet.");
-        }
+        } 
         else{
             lastMailItem.print();
         }
@@ -115,19 +119,23 @@ public class MailClient
      * Download the next mail item (if any) for this user
      * When it is valid send an auto-reply mail to the sender. 
      */
-     public void getNextMailAndAutoReply()
+     public void autoReplyNextMailItem()
     { 
        MailItem item = server.getNextMailItem(user);
-       if(item == null || checkSpam(item)){
+       if(item == null){
            System.out.println("Nothing to reply.");
+       }
+       else if (checkSpam(item))
+       {
+           System.out.println("Your next mail has been marked as spam.");
        }
        else{
            String subject = "Re: " + item.getSubject();
            String message = "Thanks for your mail.\n" 
                                 + item.getMessage();
            checkLengthMMessage(item);
+           lastMailItem = item;
            sendMailItem(item.getFrom(), subject, message);
-           sentMails += 1;
            receivedMails += 1;
        }
     }
@@ -169,14 +177,42 @@ public class MailClient
      */
     public void printMailStatistics()
     {
-        if(sentMails > 0 )
+        if(receivedMails > 0 )
         {
-           System.out.println("Received:" + receivedMails + " " + "Sent: " + sentMails 
-                                + " Longer mail from: " + longerMail.getFrom());
+           System.out.println("Sent: [" + sentMails +  "], Received: [" + receivedMails 
+                                + "], Longer mail from: [" + longerMail.getFrom() + "].");
         }
         else
         {
-           System.out.println("Received:" + receivedMails + " " + "Sent: " + sentMails);
+           System.out.println("Sent: [" + receivedMails + "], Received: [" + sentMails + "].");
         }
+    }
+    
+    /**
+     * Encrypt and send the given message  to the given recipient via
+     * the attached mail server. Encrypted mail message starts with ?=?.
+     * @param to The intended recipient.
+     * @param subject The subject of the message.
+     * @param message The original text of the message to be sent.
+     */
+    public void sendEncryptedMailItem(String to, String subject, String message)
+    {
+        MailItem item = new MailItem(user,to,subject,message);
+        if (!checkSpam(item)){
+            sentMails += 1;
+        }
+        message = message.replace("a","$\\");
+        message = message.replace("A", "^");
+        message = message.replace("e", "*");
+        message = message.replace("E", "Ç");
+        message = message.replace("i", "º");
+        message = message.replace("I", "=");
+        message = message.replace("o", "·");
+        message = message.replace("O", "!");
+        message = message.replace("u", "ª");
+        message = message.replace("U", "+");
+        message = "?=? " + message;
+        item = new MailItem(user,to,subject,message);
+        server.post(item);
     }
 }

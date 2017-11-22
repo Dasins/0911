@@ -9,22 +9,13 @@
  */
 public class Test
 {
-    // The server used to sending and receiving.
-    private MailServer groupD;
-    // A user running this server.
-    private MailClient franMailClient;
-    // Other user running this server.
-    private MailClient julioMailClient;
     
     /**
      * Create one server with two clients to test the functionalities 
      * of our mail system.
      */
     public Test()
-    {
-        groupD = new MailServer();
-        franMailClient = new MailClient(groupD, "fran@groupd.dam");
-        julioMailClient = new MailClient(groupD, "julio@groupd.dam");  
+    { 
     }
     
     /**
@@ -37,46 +28,66 @@ public class Test
      */
     public void testFuncionalidad01()
     {
+        MailServer groupD = new MailServer();
+        MailClient franMailClient = new MailClient(groupD, "fran@groupd.dam");
+        MailClient julioMailClient = new MailClient(groupD, "julio@groupd.dam");
         String to = "julio@groupd.dam";
-        String subject = "A simply test message";
-        String message = "TestFuncionalidad01";
-        // First test. 0 mail on server.
-        System.out.println("Checking first functionality...");
-        System.out.println("===================");
-        System.out.println("Julio checks if he has mail.");
-        System.out.println("He expected 0.");
-        julioMailClient.howManyMailItems();
-        System.out.println("===================");
-        // Second test. 3 mails sends. 3 mails on server.
+        String subject = "Test \"Funcionalidad01()\"";
+        String message = "";
+        int numOfTests = 0;
+        System.out.println("Testing functionality01...");
         System.out.println("");
-        System.out.println("===================");
-        System.out.println("Fran sends 3 messages to Julio.");
+        //Test 1: No mails on server
+        numOfTests++;
+        System.out.println("##- TEST " + numOfTests + " -##");
+        System.out.println("0 mails on server. ");
+        System.out.println("Expected: [0].");
+        julioMailClient.howManyMailItems();
+        //Test 2: Two mails on server.
+        numOfTests++;
+        System.out.println("##- TEST " + numOfTests + " -##");
+        System.out.println("Other mail client sent 1 mail to ours mail client.");
+        franMailClient.sendMailItem(to, subject, message);
+        System.out.println("Expected: [1].");
+        julioMailClient.howManyMailItems();
+        System.out.println("");
+        //Test 3: Download and auto-reply a mail.
+        numOfTests++;
+        System.out.println("##- TEST " + numOfTests + " -##");
+        System.out.println("Download and auto-reply a mail ");
+        julioMailClient.autoReplyNextMailItem();
+        System.out.println("Expected: [0].");
+        julioMailClient.howManyMailItems();
+        System.out.println("");
+        //Test 4: Received 6 spam mails on server.
+        numOfTests++;
+        System.out.println("##- TEST " + numOfTests + " -##");
+        System.out.println("Other mail client sent 6 spam mails to ours mail client.");
+        message = "Take a \"viagra\".";
         franMailClient.sendMailItem(to, subject, message);
         franMailClient.sendMailItem(to, subject, message);
         franMailClient.sendMailItem(to, subject, message);
-        System.out.println("Julio checks if he has mail.");
-        System.out.println("He expected 3.");
+        franMailClient.sendMailItem(to, subject, message);
+        franMailClient.sendMailItem(to, subject, message);
+        franMailClient.sendMailItem(to, subject, message);
+        System.out.println("Expected: [6].");
         julioMailClient.howManyMailItems();
-        System.out.println("===================");
-        // Third test. 3 mails on server, download 2.
         System.out.println("");
-        System.out.println("===================");
-        System.out.println("Julio downloads 2 mails to read them.");
-        julioMailClient.getNextMailItem();
-        julioMailClient.getNextMailItem();
-        System.out.println("Julio checks if he has mail.");
-        System.out.println("He expected 1");
+        //Test 5: Download and auto-reply the spam mail..
+        numOfTests++;
+        System.out.println("##- TEST " + numOfTests + " -##");
+        System.out.println("Download and auto-reply the spam mail.");
+        julioMailClient.autoReplyNextMailItem();
+        System.out.println("Expected: [5].");
         julioMailClient.howManyMailItems();
-        System.out.println("===================");
-        //Fourth test. 1 mails on server, download 1.
         System.out.println("");
-        System.out.println("===================");
-        System.out.println("Julio downloads 1 emails to read them.");
-        julioMailClient.getNextMailItem();
-        System.out.println("Julio checks if he has mail.");
-        System.out.println("He expected 0");
+        //Test 6: Other mail client sent 1 encripted mail and other mail to ours.
+        numOfTests++;
+        System.out.println("##- TEST " + numOfTests + " -##");
+        System.out.println("1 mail and 1 encrypted mail sent to our mail client");
+        System.out.println("Expected: [7].");
         julioMailClient.howManyMailItems();
-        System.out.println("===================");
+        System.out.println("");
     }
     
     /** 
@@ -87,44 +98,130 @@ public class Test
      */
     public void testFuncionalidad02()
     {
-        // Car
+        MailServer groupD = new MailServer();
+        MailClient franMailClient = new MailClient(groupD, "fran@groupd.dam");
+        MailClient julioMailClient = new MailClient(groupD, "julio@groupd.dam");
+        String from = "fran@groupd.dam";
         String to = "julio@groupd.dam";
-        String subject = "A simply test message";
-        String message = "TestFuncionalidad02";
-        String otherMessage = "The life of the wife is ended by the knife.";
-        // First test. No mails.
-        System.out.println("===================");
-        System.out.println("No mails. Julio tries to read his last mail.");
+        String subject = "Test \"Funcionalidad02()\"";
+        String message = "";
+        int numOfTests = 0;
+        MailItem expectedItem = new MailItem (from, to, subject, message);
+        System.out.println("Testing functionality02...");
+        System.out.println("");
+        // Test 1: No mails received
+        numOfTests++;
+        System.out.println("##- TEST " + numOfTests + " -##");
+        System.out.println("No mails received.");
         julioMailClient.printLastMailItem();
-        System.out.println("===================");
-        // Second test, send 1 mail, download and print it. 
         System.out.println("");
-        System.out.println("===================");
-        System.out.println("Fran sends 1 message to Julio.");
+        // Test 2: 1 mail received and download
+        numOfTests++;
+        System.out.println("##- TEST " + numOfTests + " -##");
+        System.out.println("Mail sent to ours and download.");
+        message = "Hello!";
+        expectedItem = new MailItem (from, to, subject, message);
         franMailClient.sendMailItem(to, subject, message);
-        System.out.println("Julio downloads and prints the mail.");
         System.out.println("");
+        System.out.println("Expected:");
+        System.out.println("--------------------");
+        expectedItem.print();
+        System.out.println("--------------------");
+        System.out.println("");
+        System.out.println("Obtained:");
+        julioMailClient.getNextMailItem();
+        julioMailClient.printLastMailItem();
+        System.out.println("--------------------");
+        System.out.println("");
+        // Test 3: 3 Mail received, print 3.
+        numOfTests++;
+        System.out.println("##- TEST " + numOfTests + " -##");
+        System.out.println("3 different mails sent to ours and printed:");
+        message = "First message";
+        franMailClient.sendMailItem(to, subject, message);
+        System.out.println("--------------------");
+        julioMailClient.printNextMailItem();
+        message = "Second message";
+        franMailClient.sendMailItem(to, subject, message);
+        System.out.println("--------------------");;
+        julioMailClient.printNextMailItem();
+        message = "Third message";
+        expectedItem = new MailItem (from, to, subject, message);
+        franMailClient.sendMailItem(to, subject, message);
+        System.out.println("--------------------");
+        julioMailClient.printNextMailItem();
+        System.out.println("--------------------");
+        System.out.println("");
+        System.out.println("Expected:");
+        System.out.println("--------------------");
+        expectedItem.print();
+        System.out.println("--------------------");
+        System.out.println("");
+        System.out.println("Obtained:");
+        julioMailClient.printLastMailItem();
+        System.out.println("--------------------");
+        System.out.println("");
+        // Test 4: Mail received and auto-reply.
+        numOfTests++;
+        System.out.println("##- TEST " + numOfTests + " -##");
+        System.out.println("Mail sent to ours and auto-reply.");
+        message = "Can you see me?";
+        expectedItem = new MailItem (from, to, subject, message);
+        franMailClient.sendMailItem(to, subject, message);
+        System.out.println("");
+        System.out.println("Expected:");
+        System.out.println("--------------------");
+        expectedItem.print();
+        System.out.println("--------------------");
+        System.out.println("");
+        System.out.println("Obtained:");
+        julioMailClient.autoReplyNextMailItem();
+        julioMailClient.printLastMailItem();
+        System.out.println("--------------------");
+        System.out.println("");
+        // Test 5: Spam mail received and download.
+        numOfTests++;
+        System.out.println("##- TEST " + numOfTests + " -##");
+        System.out.println("Spam mail sent to ours and download.");
+        message = "Take a \"viagra\".";
+        franMailClient.sendMailItem(to, subject, message);
+        julioMailClient.getNextMailItem();
+        System.out.println("--------------------");
+        julioMailClient.printLastMailItem();
+        System.out.println("--------------------");
+        System.out.println("");
+        // Test 6: Spam mail received and printed.
+        numOfTests++;
+        System.out.println("##- TEST " + numOfTests + " -##");
+        System.out.println("Spam mail sent to ours and printed:");
+        franMailClient.sendMailItem(to, subject, message);
+        System.out.println("--------------------");
         julioMailClient.printNextMailItem();
         System.out.println("");
-        System.out.println("Julio tries to read his last mail.");
+        System.out.println("Expected:");
+        System.out.println("--------------------");
+        expectedItem.print();
+        System.out.println("--------------------");
         System.out.println("");
+        System.out.println("Obtained:");
         julioMailClient.printLastMailItem();
-        System.out.println("===================");
-        // Third test, send 1 diferent mail, download and read 2 times.
+        System.out.println("--------------------");
         System.out.println("");
-        System.out.println("===================");
-        System.out.println("Fran sends 1 diferent message to Julio.");
-        franMailClient.sendMailItem(to, subject, otherMessage);
-        System.out.println("Julio downloads the new mail");
-        julioMailClient.getNextMailItem();
-        System.out.println("Julio tries to read his last mail.");
+        // Test 7: Spam mail received and auto-reply.
+        numOfTests++;
+        System.out.println("##- TEST " + numOfTests + " -##");
+        System.out.println("Spam mail sent to ours and auto-reply.");
+        franMailClient.sendMailItem(to, subject, message);
         System.out.println("");
+        System.out.println("Expected:");
+        System.out.println("--------------------");
+        expectedItem.print();
+        System.out.println("--------------------");
+        System.out.println("");
+        System.out.println("Obtained:");
         julioMailClient.printLastMailItem();
+        System.out.println("--------------------");
         System.out.println("");
-        System.out.println("Julio tries to read his last mail again.");
-        System.out.println("");
-        julioMailClient.printLastMailItem();
-        System.out.println("===================");
     }
     
     /** 
@@ -134,36 +231,51 @@ public class Test
      */
     public void testFuncionalidad03()
     {
+        MailServer groupD = new MailServer();
+        MailClient franMailClient = new MailClient(groupD, "fran@groupd.dam");
+        MailClient julioMailClient = new MailClient(groupD, "julio@groupd.dam");
+        String from = "fran@groupd.dam";
         String to = "julio@groupd.dam";
-        String subject = "A simply test message";
-        String message = "Blablabla bla blabla";
-        //First test, no mail, try to auto-reply.
-        System.out.println("===================");
-        System.out.println("No mail. " + 
-                        "Julio tries to auto-reply his next mail.");
-        julioMailClient.getNextMailAndAutoReply();
-        System.out.println("===================");
-        // Second test, send 1 mail, auto-reply it and print the reply. 
+        String subject = "Test \"Funcionalidad03()\"";
+        String message = "";
+        int numOfTests = 0;
+        MailItem expectedItem = new MailItem (from, to, subject, message);
+        System.out.println("Testing functionality03...");
         System.out.println("");
-        System.out.println("===================");
-        System.out.println("Fran sends 1 message to Julio.");
+        // Test 1: No mails received
+        numOfTests++;
+        System.out.println("##- TEST " + numOfTests + " -##");
+        System.out.println("No mails received.");
+        julioMailClient.autoReplyNextMailItem();
+        System.out.println("");
+        // Test 2: 1 mail received and autoreply
+        numOfTests++;
+        System.out.println("##- TEST " + numOfTests + " -##");
+        System.out.println("Mail sent to ours and autoreply.");
+        message = "Hello!";
+        expectedItem = new MailItem (from, to, subject, message);
         franMailClient.sendMailItem(to, subject, message);
-        System.out.println("Julio tries to auto-reply his next mail.");
-        System.out.println("");
-        julioMailClient.getNextMailAndAutoReply();
-        System.out.println("Fran downloads and prints the Julio's reply.");
-        System.out.println("");
+        julioMailClient.autoReplyNextMailItem();
+        System.out.println("Our mail received:");
+        System.out.println("--------------------");
+        julioMailClient.printLastMailItem();
+        System.out.println("--------------------");
+        System.out.println("Their mail received");
         franMailClient.printNextMailItem();
-        System.out.println("===================");
-        //Third test, send 1 mail with spam. Try to auto-reply.
         System.out.println("");
-        System.out.println("===================");
-        System.out.println("Fran sends 1 message with spam to Julio.");
-        message = "Una buena viaga, es un buen regalo";
+        // Test 3: 1 Spam mail received.
+        numOfTests++;
+        System.out.println("##- TEST " + numOfTests + " -##");
+        System.out.println("Spam mail sent to ours and autoreply:");
+        message = "Take a viagra";
         franMailClient.sendMailItem(to, subject, message);
-        System.out.println("Julio tries to auto-reply his next mail.");
-        julioMailClient.getNextMailAndAutoReply();
-        System.out.println("===================");
+        expectedItem = new MailItem (from, to, subject, message);
+        julioMailClient.autoReplyNextMailItem();
+        System.out.println("--------------------");
+        System.out.println("Their mail received");
+        franMailClient.printNextMailItem();
+        System.out.println("--------------------");
+        System.out.println("");
     }
     
     /**
@@ -171,6 +283,9 @@ public class Test
      */
     public void testFuncionalidad04()
     {
+        MailServer groupD = new MailServer();
+        MailClient franMailClient = new MailClient(groupD, "fran@groupd.dam");
+        MailClient julioMailClient = new MailClient(groupD, "julio@groupd.dam"); 
         int okTests = 0;
         int failTests = 0;
         int numOfTests = 0;
@@ -178,15 +293,16 @@ public class Test
         String to = "julio@grupod.dam";
         String subject = "Test \"Funcionalidad04()\"";
         boolean itWasExpected = false;
-        
+        System.out.println("Testing functionality04...");
+        System.out.println("");
         // Test 1, Valid mail.
         numOfTests++;
-        String message ="\"¡A los buenos días!\"";
-        MailItem item = new MailItem(from, to, subject, message);
+        String message ="Have a good day!";
+        MailItem item = new MailItem (from, to, subject, message);
         System.out.println("##- TEST " + numOfTests + " -##");
-        System.out.println("The message of mail is: " + message);
-        System.out.printf("It was expected [" + itWasExpected + "]. ");
-        System.out.printf("It was obtain [" + julioMailClient.checkSpam(item) + "]. ");
+        System.out.println("The message of mail is: \"" + message + "\"");
+        System.out.printf("It was expected [" + itWasExpected + "], ");
+        System.out.printf("it was obtain [" + julioMailClient.checkSpam(item) + "]. ");
         if (julioMailClient.checkSpam(item) == false){
             System.out.println(" SUCCESS!");
             okTests++;
@@ -195,17 +311,16 @@ public class Test
             System.out.println(" FAIL!");
             failTests++;
         }
-        
         // Test 2, Invalid mail. The message contains "viagra" in lower case.
         numOfTests++;
-        message ="\"Do you want a viagra?\"";
+        message ="Do you want a viagra?";
         itWasExpected = true;
-        item = new MailItem(from, to, subject, message);
+        item = new MailItem (from, to, subject, message);
         System.out.println("");
         System.out.println("##- TEST " + numOfTests + " -##");
-        System.out.println("The message of mail is: " + message);
-        System.out.printf("It was expected [" + itWasExpected + "]. ");
-        System.out.printf("It was obtain [" + julioMailClient.checkSpam(item) + "]. ");
+        System.out.println("The message of mail is: \"" + message + "\"");
+        System.out.printf("It was expected [" + itWasExpected + "], ");
+        System.out.printf("it was obtain [" + julioMailClient.checkSpam(item) + "]. ");
         if (julioMailClient.checkSpam(item) == true){
             System.out.println(" SUCCESS!");
             okTests++;
@@ -214,16 +329,15 @@ public class Test
             System.out.println(" FAIL!");
             failTests++;
         }
-        
         // Test 3, Invalid mail. The message contains "regalo" in lower case.
         numOfTests++;
-        message ="\"Do you want a 'regalo'?\"";
-        item = new MailItem(from, to, subject, message);
+        message ="Do you want a 'regalo'?";
+        item = new MailItem (from, to, subject, message);
         System.out.println("");
         System.out.println("##- TEST " + numOfTests + " -##");
-        System.out.println("The message of mail is: " + message);
-        System.out.printf("It was expected [" + itWasExpected + "]. ");
-        System.out.printf("It was obtain [" + julioMailClient.checkSpam(item) + "]. ");
+        System.out.println("The message of mail is: \"" + message + "\"");
+        System.out.printf("It was expected [" + itWasExpected + "], ");
+        System.out.printf("it was obtain [" + julioMailClient.checkSpam(item) + "]. ");
         if (julioMailClient.checkSpam(item) == true){
             System.out.println(" SUCCESS!");
             okTests++;
@@ -232,16 +346,15 @@ public class Test
             System.out.println(" FAIL!");
             failTests++;
         }
-      
         // Test 4, Invalid mail. The message contains "vIaGrAS" in lower and upper case.
         numOfTests++;
         message ="\"¿Do you want some 'vIaGrAS'?\"";
-        item = new MailItem(from, to, subject, message);
+        item = new MailItem (from, to, subject, message);
         System.out.println("");
         System.out.println("##- TEST " + numOfTests + " -##");
         System.out.println("The message of mail is: " + message);
-        System.out.printf("It was expected [" + itWasExpected + "]. ");
-        System.out.printf("It was obtain [" + julioMailClient.checkSpam(item) + "]. ");
+        System.out.printf("It was expected [" + itWasExpected + "], ");
+        System.out.printf("it was obtain [" + julioMailClient.checkSpam(item) + "]. ");
         if (julioMailClient.checkSpam(item) == true){
             System.out.println(" SUCCESS!");
             okTests++;
@@ -250,16 +363,15 @@ public class Test
             System.out.println(" FAIL!");
             failTests++;
         }
-        
         // Test 5, Invalid mail. The message contains "rEGAloS" in lower and upper case.
         numOfTests++;
         message ="\"¿Do you want some 'rEGAloS'?\"";
-        item = new MailItem(from, to, subject, message);
+        item = new MailItem (from, to, subject, message);
         System.out.println("");
         System.out.println("##- TEST " + numOfTests + " -##");
         System.out.println("The message of mail is: " + message);
-        System.out.printf("It was expected [" + itWasExpected + "]. ");
-        System.out.printf("It was obtain [" + julioMailClient.checkSpam(item) + "]. ");
+        System.out.printf("It was expected [" + itWasExpected + "], ");
+        System.out.printf("it was obtain [" + julioMailClient.checkSpam(item) + "]. ");
         if (julioMailClient.checkSpam(item) == true){
             System.out.println(" SUCCESS!");
             okTests++;
@@ -268,11 +380,169 @@ public class Test
             System.out.println(" FAIL!");
             failTests++;
         }
-        
         // Results
         System.out.println("");
-        System.out.printf("Total of tests: [" + numOfTests + "]. ");
-        System.out.printf("Success tests: [" + okTests + "]. ");
-        System.out.printf("Fail tests: [" + failTests + "]. ");
+        System.out.println("Total of tests: [" + numOfTests + "]. ");
+        System.out.println("Success tests: [" + okTests + "]. ");
+        System.out.println("Fail tests: [" + failTests + "]. ");
+    }
+    
+    /**
+     * Check the mail statistics system.
+     */
+    public void testFuncionalidad05()
+    {
+        MailServer groupD = new MailServer();
+        MailClient franMailClient = new MailClient(groupD, "fran@groupd.dam");
+        MailClient julioMailClient = new MailClient(groupD, "julio@groupd.dam");
+        String from = "fran@groupd.dam";
+        String to = "julio@groupd.dam";
+        String subject = "Test \"Funcionalidad05()\"";
+        String message = "";
+        int numOfTests = 0;
+        System.out.println("Testing functionality05...");
+        System.out.println("");
+        // Test 1: No mails received
+        numOfTests++;
+        System.out.println("##- TEST " + numOfTests + " -##");
+        System.out.println("No mails received.");
+        System.out.println("Expected: Sent: [0], Received: [0], ");
+        julioMailClient.printMailStatistics();
+        System.out.println("");
+        // Test 2: 1 mail received and download.
+        numOfTests++;
+        System.out.println("##- TEST " + numOfTests + " -##");
+        System.out.println("Mail sent to ours and download");
+        message = "Hello!";
+        franMailClient.sendMailItem(to, subject, message);
+        julioMailClient.getNextMailItem();
+        System.out.println("Expected: Sent: [0], Received: [1], ");
+        System.out.println("Longer mail from: [fran@groupd.dam]");
+        julioMailClient.printMailStatistics();
+        System.out.println("");
+        // Test 3: 2 mails sent.
+        numOfTests++;
+        System.out.println("##- TEST " + numOfTests + " -##");
+        System.out.println("We sent two mails");
+        to = "fran@groupd.dam";
+        julioMailClient.sendMailItem(to, subject, message);
+        julioMailClient.sendMailItem(to, subject, message);
+        System.out.println("Expected: Sent: [2], Received: [1], ");
+        System.out.println("Longer mail from: [fran@groupd.dam]");
+        julioMailClient.printMailStatistics();
+        System.out.println("");
+        // Test 4: Longer mail from changes
+        numOfTests++;
+        System.out.println("##- TEST " + numOfTests + " -##");
+        System.out.println("4 mails with different length sent to ours and print");
+        to = "julio@groupd.dam";
+        System.out.println("Mails:");
+        message = "I'm not the longer mail.";
+        franMailClient = new MailClient(groupD, "adrian@groupd.dam");
+        franMailClient.sendMailItem(to, subject, message);
+        message = "I'm not the longer mail, sorry.";
+        franMailClient = new MailClient(groupD, "daniel@groupd.dam");
+        franMailClient.sendMailItem(to, subject, message);
+        message = "Of course, I'm the mail with the greater length.\nI'm the longeeeeeeest!";
+        franMailClient = new MailClient(groupD, "david@groupd.dam");
+        franMailClient.sendMailItem(to, subject, message);
+        message = "Wrong!";
+        franMailClient = new MailClient(groupD, "fran@groupd.dam");
+        franMailClient.sendMailItem(to, subject, message);
+        System.out.println("--------------------");
+        julioMailClient.printNextMailItem();
+        System.out.println("--------------------");
+        julioMailClient.printNextMailItem();
+        System.out.println("--------------------");
+        julioMailClient.printNextMailItem();
+        System.out.println("--------------------");
+        julioMailClient.printNextMailItem();
+        System.out.println("--------------------");
+        System.out.println("Expected: Sent: [2], Received: [5], ");
+        System.out.println("Longer mail from: [david@groupd.dam]");
+        julioMailClient.printMailStatistics();
+        System.out.println("");
+        // Test 5: One mail received and auto-reply
+        numOfTests++;
+        System.out.println("##- TEST " + numOfTests + " -##");
+        System.out.println("Mail sent to our mail server and auto-reply");
+        franMailClient.sendMailItem(to, subject, message);
+        julioMailClient.autoReplyNextMailItem();
+        System.out.println("Expected: Sent: [3], Received: [6], ");
+        System.out.println("Longer mail from: [david@groupd.dam]");
+        julioMailClient.printMailStatistics();
+        System.out.println("");
+        // Test 6: Spam mail sent.
+        numOfTests++;
+        System.out.println("##- TEST " + numOfTests + " -##");
+        System.out.println("We sent spam mail");
+        message = "Do you need some viagra?";
+        julioMailClient.sendMailItem(to, subject, message);
+        System.out.println("Expected: Sent: [3], Received: [6], ");
+        System.out.println("Longer mail from: [david@groupd.dam]");
+        julioMailClient.printMailStatistics();
+        System.out.println("");
+        // Test 7: 3 Spam mail received and download, print and autoreply.
+        numOfTests++;
+        System.out.println("##- TEST " + numOfTests + " -##");
+        System.out.println("3 spam mails sent to our mail server, one download, \nother print and last auto-reply");
+        System.out.println("Note: One have more length than the actually longer mail.");
+        franMailClient.sendMailItem(to, subject, message);
+        franMailClient.sendMailItem(to, subject, message);
+        message = "One viagra, Two viagra, Three viagra, Four Viagra, Five Viagra, Six Viagra, Seven Viagra, Eight viagra, Nine viagra";
+        franMailClient.sendMailItem(to, subject, message);
+        julioMailClient.getNextMailItem();
+        julioMailClient.printNextMailItem();
+        julioMailClient.autoReplyNextMailItem();
+        System.out.println("Expected: Sent: [3], Received: [6], ");
+        System.out.println("Longer mail from: [david@groupd.dam]");
+        julioMailClient.printMailStatistics();
+        System.out.println("");
+        // Test 8: 3 Encrypted mail sent.
+        numOfTests++;
+        System.out.println("##- TEST " + numOfTests + " -##");
+        System.out.println("Encrypted mail sent");
+        message = "The meaning of life is 42."; 
+        franMailClient.sendEncryptedMailItem(to, subject, message);
+        System.out.println("Expected: Sent: [4], Received: [6], ");
+        System.out.println("Longer mail from: [david@groupd.dam]");
+        julioMailClient.printMailStatistics();
+        System.out.println("");
+    }
+    
+    
+    /**
+     * Check encrypt method.
+     */
+    public void testFuncionalidad06()
+    {
+        MailServer groupD = new MailServer();
+        MailClient franMailClient = new MailClient(groupD, "fran@groupd.dam");
+        MailClient julioMailClient = new MailClient(groupD, "julio@groupd.dam");
+        String from = "fran@groupd.dam";
+        String to = "julio@groupd.dam";
+        String subject = "Test \"Funcionalidad06()\"";
+        String message = "This mail contains classified information.\nThe meaning of life is 42.";
+        int numOfTests = 0;
+        System.out.println("Testing functionality06...");
+        System.out.println("");
+        // Test 1: Normal mail
+        numOfTests++;
+        System.out.println("##- TEST " + numOfTests + " -##");
+        System.out.println("Mail sent to our mail server and printed.");
+        franMailClient.sendMailItem (to, subject, message);
+        System.out.println("--------------------");
+        julioMailClient.printNextMailItem();
+        System.out.println("--------------------");
+        System.out.println("");
+        // Test 2: Encrypted mail
+        numOfTests++;
+        System.out.println("##- TEST " + numOfTests + " -##");
+        System.out.println("Encrypted mail sent to our mail server and printed.");
+        franMailClient.sendEncryptedMailItem (to, subject, message);
+        System.out.println("--------------------");
+        julioMailClient.printNextMailItem();
+        System.out.println("--------------------");
+        System.out.println("");
     }
 }
